@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AddOnRegData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" SlientInstallation="No" SlientUpgrade="No" Partnernmsp="SmLabs PriceList" SchemaVersion="3.0" Type="" MultipleVersion="false" OnDemand="" OnPremise="" ExtName="SmLabs PriceList" ExtVersion="1.0.0" Contdata="" Partner="SmLabs" DBType="MSSQL" ClientType="A">
+  <Validity>
+    <SBOCompatibility>
+      <Version From="" To="" />
+    </SBOCompatibility>
+  </Validity>
+  <Configuration>
+    <Repository>
+      <Properties />
+    </Repository>
+    <Deployment>
+      <Properties />
+    </Deployment>
+    <Assignment>
+      <Properties />
+    </Assignment>
+  </Configuration>
+  <Addons>
+    <Addon Name="" Group="" ForceFlag="" Visible="" AutoAssign="" SelfUpgrd="">
+      <x86 AddonExe="C:\Users\sedat\Desktop\ERP Dosyalar\Web Browser Test\PriceList\PriceList\bin\Debug\PriceList.exe" AddonSig="">
+        <Installation>
+          <Files>
+            <File FileName="EROPASAPLib.dll">
+              <Actions />
+            </File>
+            <File FileName="PriceList.b1s">
+              <Actions />
+            </File>
+            <File FileName="PriceList.exe">
+              <Actions />
+            </File>
+            <File FileName="PriceList.exe.config">
+              <Actions />
+            </File>
+            <File FileName="PriceList.pdb">
+              <Actions />
+            </File>
+            <File FileName="PriceList.vshost.exe">
+              <Actions />
+            </File>
+            <File FileName="PriceList.vshost.exe.config">
+              <Actions />
+            </File>
+            <File FileName="PriceList.vshost.exe.manifest">
+              <Actions />
+            </File>
+            <File FileName="SAPBusinessOneSDK.dll">
+              <Actions />
+            </File>
+            <File FileName="SAPSQLBuilder.dll">
+              <Actions />
+            </File>
+          </Files>
+        </Installation>
+        <Uninstallation>
+          <Files>
+            <File FileName="EROPASAPLib.dll">
+              <Actions />
+            </File>
+            <File FileName="PriceList.b1s">
+              <Actions />
+            </File>
+            <File FileName="PriceList.exe">
+              <Actions />
+            </File>
+            <File FileName="PriceList.exe.config">
+              <Actions />
+            </File>
+            <File FileName="PriceList.pdb">
+              <Actions />
+            </File>
+            <File FileName="PriceList.vshost.exe">
+              <Actions />
+            </File>
+            <File FileName="PriceList.vshost.exe.config">
+              <Actions />
+            </File>
+            <File FileName="PriceList.vshost.exe.manifest">
+              <Actions />
+            </File>
+            <File FileName="SAPBusinessOneSDK.dll">
+              <Actions />
+            </File>
+            <File FileName="SAPSQLBuilder.dll">
+              <Actions />
+            </File>
+          </Files>
+        </Uninstallation>
+      </x86>
+      <x64 AddonExe="C:\Users\sedat\Desktop\ERP Dosyalar\Web Browser Test\PriceList\PriceList\bin\Debug\PriceList.exe" AddonSig="">
+        <Installation>
+          <Files>
+            <File FileName="EROPASAPLib.dll">
+              <Actions />
+            </File>
+            <File FileName="PriceList.b1s">
+              <Actions />
+            </File>
+            <File FileName="PriceList.exe">
+              <Actions />
+            </File>
+            <File FileName="PriceList.exe.config">
+              <Actions />
+            </File>
+            <File FileName="PriceList.pdb">
+              <Actions />
+            </File>
+            <File FileName="PriceList.vshost.exe">
+              <Actions />
+            </File>
+            <File FileName="PriceList.vshost.exe.config">
+              <Actions />
+            </File>
+            <File FileName="PriceList.vshost.exe.manifest">
+              <Actions />
+            </File>
+            <File FileName="SAPBusinessOneSDK.dll">
+              <Actions />
+            </File>
+            <File FileName="SAPSQLBuilder.dll">
+              <Actions />
+            </File>
+          </Files>
+        </Installation>
+        <Uninstallation>
+          <Files>
+            <File FileName="EROPASAPLib.dll">
+              <Actions />
+            </File>
+            <File FileName="PriceList.b1s">
+              <Actions />
+            </File>
+            <File FileName="PriceList.exe">
+              <Actions />
+            </File>
+            <File FileName="PriceList.exe.config">
+              <Actions />
+            </File>
+            <File FileName="PriceList.pdb">
+              <Actions />
+            </File>
+            <File FileName="PriceList.vshost.exe">
+              <Actions />
+            </File>
+            <File FileName="PriceList.vshost.exe.config">
+              <Actions />
+            </File>
+            <File FileName="PriceList.vshost.exe.manifest">
+              <Actions />
+            </File>
+            <File FileName="SAPBusinessOneSDK.dll">
+              <Actions />
+            </File>
+            <File FileName="SAPSQLBuilder.dll">
+              <Actions />
+            </File>
+          </Files>
+        </Uninstallation>
+      </x64>
+    </Addon>
+  </Addons>
+  <XApps>
+    <XApp Name="" Path="" FileName="" />
+  </XApps>
+  <UDQs>
+    <UDQ udqname="">
+      <Hana FileName="" />
+    </UDQ>
+  </UDQs>
+</AddOnRegData>
