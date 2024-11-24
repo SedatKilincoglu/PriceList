@@ -77,7 +77,6 @@ namespace PriceList
         private void OnCustomInitialize()
         {
             PaymentRecordSet = (SAPbobsCOM.Recordset)Program.diCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset);
-            AddContextMenu();
             AddMatrixColumns();
         }
 
@@ -215,23 +214,6 @@ namespace PriceList
 
         }
 
-        private void AddContextMenu()
-        {
-            // Yeni bir sağ tıklama menüsü ekle
-            SAPbouiCOM.Menus menus = Program.SBO_Application.Menus;
-            SAPbouiCOM.MenuItem menuItem = Program.SBO_Application.Menus.Item("1280"); // Sağ tıklama menüsünün ID'si
-
-            if (!menus.Exists("Custom_DeleteRow"))
-            {
-                SAPbouiCOM.MenuCreationParams menuParams = (SAPbouiCOM.MenuCreationParams)Program.SBO_Application.CreateObject(SAPbouiCOM.BoCreatableObjectType.cot_MenuCreationParams);
-                menuParams.Type = SAPbouiCOM.BoMenuType.mt_STRING;
-                menuParams.UniqueID = "Custom_DeleteRow";
-                menuParams.String = "Satırı Sil";
-                menuParams.Enabled = true;
-                menuParams.Position = menuItem.SubMenus.Count + 1;
-                menuItem.SubMenus.AddEx(menuParams);
-            }
-        }
 
         private void AddMatrixColumns()
         {
