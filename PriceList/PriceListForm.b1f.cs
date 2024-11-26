@@ -62,12 +62,14 @@ namespace PriceList
         {
             this.DataLoadAfter += new SAPbouiCOM.Framework.FormBase.DataLoadAfterHandler(this.Form_DataLoadAfter);
             this.ResizeAfter += new SAPbouiCOM.Framework.FormBase.ResizeAfterHandler(this.Form_ResizeAfter);
-           // Program.SBO_Application.ItemEvent += new SAPbouiCOM._IApplicationEvents_ItemEventEventHandler(SBO_Application_ItemEvent);
+            //  Program.SBO_Application.ItemEvent += new SAPbouiCOM._IApplicationEvents_ItemEventEventHandler(SBO_Application_ItemEvent);
+            this.LoadAfter += new LoadAfterHandler(this.Form_LoadAfter);
 
         }
 
         private void OnCustomInitialize()
         {
+
         }
 
         private void setMatrixData(SAPbouiCOM.Matrix mtName, String colName, int rowIndex, String Data)
@@ -97,7 +99,11 @@ namespace PriceList
 
         private void Button0_ClickBefore(object sboObject, SAPbouiCOM.SBOItemEventArg pVal, out bool BubbleEvent)
         {
-
+            if (!Program.AuthorizedUser)
+            {
+                BubbleEvent = false;
+                return;
+            }
             BubbleEvent = false;
             SAPbouiCOM.Form MainSAPForm;
             MainSAPForm = Program.SBO_Application.Forms.ActiveForm;
@@ -155,6 +161,11 @@ namespace PriceList
         SAPbouiCOM.Form MainSAPForm;
         private void bt_Add_ClickBefore(object sboObject, SAPbouiCOM.SBOItemEventArg pVal, out bool BubbleEvent)
         {
+            if (!Program.AuthorizedUser)
+            {
+                BubbleEvent = false;
+                return;
+            }
             MainSAPForm = Program.SBO_Application.Forms.ActiveForm;
             var frmFilter = new FilterForm(Program.SBO_Application, PassFilterData);
             frmFilter.Show();
@@ -238,6 +249,11 @@ namespace PriceList
 
         private void bt_Del_ClickBefore(object sboObject, SBOItemEventArg pVal, out bool BubbleEvent)
         {
+            if (!Program.AuthorizedUser)
+            {
+                BubbleEvent = false;
+                return;
+            }
             BubbleEvent = true;
             // Seçili satırı al ve sil
             int selectedRow = mx_Price.GetNextSelectedRow(0, SAPbouiCOM.BoOrderType.ot_RowOrder);
@@ -286,6 +302,12 @@ namespace PriceList
         {
             BubbleEvent = true;
             Program.SBO_Application.StatusBar.SetText(pVal.EventType.ToString(), SAPbouiCOM.BoMessageTime.bmt_Short, BoStatusBarMessageType.smt_None);
+        }
+
+        private void Form_LoadAfter(SBOItemEventArg pVal)
+        {
+
+            
         }
     }
 }

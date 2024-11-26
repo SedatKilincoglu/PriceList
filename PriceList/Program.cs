@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using SAPbouiCOM.Framework;
 using SAPbobsCOM;
+using System.Reflection;
+using System.IO;
 
 namespace PriceList
 {
@@ -13,6 +15,7 @@ namespace PriceList
         public static SAPbouiCOM.Application SBO_Application;
         public static SAPbobsCOM.Company diCompany;
         public static List<Models.Paym> paymList = new List<Models.Paym>();
+        public static bool AuthorizedUser = false;
         [STAThread]
         static void Main(string[] args)
         {
@@ -99,7 +102,6 @@ namespace PriceList
             CreateField("SML_PRCITEM", "Currency", "Döviz Cinsi", SAPbobsCOM.BoFieldTypes.db_Alpha, 3);
 
             CreateUDO("SML_PRCHEAD", "SML_PRCITEM","Fiyat Listeleri", SAPbobsCOM.BoUDOObjType.boud_Document);
-            
 
             CreateTable("SML_DSCHEAD", "Dönemsel İndirimler", SAPbobsCOM.BoUTBTableType.bott_Document);
             CreateField("SML_DSCHEAD", "ValidFrom", "Geçerlilik Başlangıcı", SAPbobsCOM.BoFieldTypes.db_Date, 100);
@@ -116,6 +118,49 @@ namespace PriceList
             }
 
             CreateUDO("SML_DSCHEAD", "SML_DSCITEM","Dönemsel İndirimler", SAPbobsCOM.BoUDOObjType.boud_Document);
+
+            CreateTable("SML_PRCAUTH", "Fiyat Listesi yetkilendirme", SAPbobsCOM.BoUTBTableType.bott_MasterData);
+            CreateUDO("SML_PRCAUTH", "", "İndirim Yetkilendirme Tablosu", SAPbobsCOM.BoUDOObjType.boud_MasterData);
+            ExecuteSqlScripts();
+        }
+
+        private static void ExecuteSqlScripts()
+        {
+            try
+            {
+                SAPbobsCOM.Company bobsCompany;
+                bobsCompany = (SAPbobsCOM.Company)Program.diCompany;
+                SAPbobsCOM.Recordset defaultRecordSet;
+                defaultRecordSet = (SAPbobsCOM.Recordset)Program.diCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset);
+                Assembly assembly = Assembly.GetExecutingAssembly();
+                string fileName = "PriceList.SQL.InsertScript.sql";
+                string sqlScript;
+                using (Stream stream = assembly.GetManifestResourceStream(fileName))
+                {
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        sqlScript = reader.ReadToEnd();
+                    }
+                }
+                defaultRecordSet.DoQuery(sqlScript);
+                SAPbobsCOM.Recordset userRecordSet;
+                userRecordSet = (SAPbobsCOM.Recordset)Program.diCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset);
+                string sqlquery = "SELECT * FROM [@SML_PRCAUTH] WHERE Code = '" + bobsCompany.UserName + "'";
+                defaultRecordSet.DoQuery(sqlquery);
+                if (defaultRecordSet.RecordCount > 0)
+                {
+                    AuthorizedUser = true;
+                }
+            }
+
+
+
+            catch (Exception ex)
+            {
+                SBO_Application.StatusBar.SetText("Exception: " + ex.Message, SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Error);
+            }
+
+
         }
 
         private static void CreateTable(string TableName, string TableDescription, SAPbobsCOM.BoUTBTableType tableType)
@@ -222,8 +267,12 @@ namespace PriceList
                 oUserObjectMD.MenuItem = SAPbobsCOM.BoYesNoEnum.tYES;
                 oUserObjectMD.EnableEnhancedForm = SAPbobsCOM.BoYesNoEnum.tNO;
                 oUserObjectMD.MenuCaption = MenuCaption;
-                oUserObjectMD.ChildTables.TableName = ChildTable;
-                oUserObjectMD.ChildTables.Add();
+                if (ChildTable != "")
+                {
+                    oUserObjectMD.ChildTables.TableName = ChildTable;
+                    oUserObjectMD.ChildTables.Add();
+                }
+
                 oUDOFind.ColumnAlias = "DocEntry";
                 oUDOFind.ColumnDescription = "DocEntry";
                 oUDOFind.Add();

@@ -146,6 +146,11 @@ namespace PriceList
         SAPbouiCOM.Form MainSAPForm;
         private void bt_Add_ClickBefore(object sboObject, SAPbouiCOM.SBOItemEventArg pVal, out bool BubbleEvent)
         {
+            if (!Program.AuthorizedUser)
+            {
+                BubbleEvent = false;
+                return;
+            }
             MainSAPForm = Program.SBO_Application.Forms.ActiveForm;
             var frmFilter = new FilterForm(Program.SBO_Application, PassFilterData);
             frmFilter.Show();
@@ -298,6 +303,11 @@ namespace PriceList
 
         private void bt_Del_ClickBefore(object sboObject, SBOItemEventArg pVal, out bool BubbleEvent)
         {
+            if (!Program.AuthorizedUser)
+            {
+                BubbleEvent = false;
+                return;
+            }
             BubbleEvent = true;
             MainSAPForm = Program.SBO_Application.Forms.ActiveForm;
             int selectedRow = mx_Disc.GetNextSelectedRow(0, SAPbouiCOM.BoOrderType.ot_RowOrder);
@@ -346,6 +356,11 @@ namespace PriceList
 
         private void bt_ChAll_ClickBefore(object sboObject, SBOItemEventArg pVal, out bool BubbleEvent)
         {
+            if (!Program.AuthorizedUser)
+            {
+                BubbleEvent = false;
+                return;
+            }
             BubbleEvent = true;
 
             string colId;

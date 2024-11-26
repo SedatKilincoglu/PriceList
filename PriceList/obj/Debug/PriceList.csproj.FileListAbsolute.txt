@@ -7,3 +7,4 @@ C:\Users\sedat\Desktop\ERP Dosyalar\Web Browser Test\PriceList\PriceList\obj\Deb
 C:\Users\sedat\Desktop\ERP Dosyalar\Web Browser Test\PriceList\PriceList\bin\Debug\EROPASAPLib.dll
 C:\Users\sedat\Desktop\ERP Dosyalar\Web Browser Test\PriceList\PriceList\bin\Debug\SAPSQLBuilder.dll
 C:\Users\sedat\Desktop\ERP Dosyalar\Web Browser Test\PriceList\PriceList\obj\Debug\PriceList.csprojResolveAssemblyReference.cache
+C:\Users\sedat\Desktop\ERP Dosyalar\Web Browser Test\PriceList\PriceList\bin\Debug\SQL\InsertScript.sql

@@ -50,6 +50,9 @@
     <Reference Include="SAPBusinessOneSDK" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="SQL\InsertScript.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="app.config" />
     <None Include="FilterForm.b1f">
       <FormCategory>UserForm</FormCategory>
