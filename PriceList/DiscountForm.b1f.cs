@@ -68,10 +68,8 @@ namespace PriceList
         /// </summary>
         public override void OnInitializeFormEvents()
         {
-            this.DataLoadAfter += new SAPbouiCOM.Framework.FormBase.DataLoadAfterHandler(this.Form_DataLoadAfter);
-            this.ResizeAfter += new SAPbouiCOM.Framework.FormBase.ResizeAfterHandler(this.Form_ResizeAfter);
-            this.UnloadAfter += new UnloadAfterHandler(this.Form_UnloadAfter);
-            Program.SBO_Application.FormDataEvent += this.SBO_Application_FormDataEvent;
+            this.DataDeleteBefore += new DataDeleteBeforeHandler(this.Form_DataDeleteBefore);
+
         }
 
         private void OnCustomInitialize()
@@ -148,6 +146,7 @@ namespace PriceList
         {
             if (!Program.AuthorizedUser)
             {
+                Program.SBO_Application.MessageBox("Yetkiniz Yok");
                 BubbleEvent = false;
                 return;
             }
@@ -305,6 +304,7 @@ namespace PriceList
         {
             if (!Program.AuthorizedUser)
             {
+                Program.SBO_Application.MessageBox("Yetkiniz Yok");
                 BubbleEvent = false;
                 return;
             }
@@ -358,6 +358,7 @@ namespace PriceList
         {
             if (!Program.AuthorizedUser)
             {
+                Program.SBO_Application.MessageBox("Yetkiniz Yok");
                 BubbleEvent = false;
                 return;
             }
@@ -388,6 +389,17 @@ namespace PriceList
             tx_ch.Value = "0";
             MainSAPForm.Freeze(false);
 
+        }
+
+        private void Form_DataDeleteBefore(ref BusinessObjectInfo pVal, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+            if (!Program.AuthorizedUser)
+            {
+                Program.SBO_Application.MessageBox("Silme Yetkiniz Yok");
+                BubbleEvent = false;
+                return;
+            }
         }
     }
 }

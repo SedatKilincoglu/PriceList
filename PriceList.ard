@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<AddOnRegData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" SlientInstallation="No" SlientUpgrade="No" Partnernmsp="SmLabs PriceList" SchemaVersion="3.0" Type="" MultipleVersion="false" OnDemand="" OnPremise="" ExtName="SmLabs PriceList" ExtVersion="1.0.0.01" Contdata="" Partner="SmLabs" DBType="MSSQL" ClientType="A">
+<AddOnRegData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" SlientInstallation="No" SlientUpgrade="No" Partnernmsp="SmLabs PriceList" SchemaVersion="3.0" Type="" MultipleVersion="false" OnDemand="" OnPremise="" ExtName="SmLabs PriceList" ExtVersion="1.0.0.03" Contdata="" Partner="SmLabs" DBType="MSSQL" ClientType="A">
   <Validity>
     <SBOCompatibility>
       <Version From="" To="" />
@@ -42,9 +42,6 @@
             <File FileName="PriceList.vshost.exe.config">
               <Actions />
             </File>
-            <File FileName="PriceList.vshost.exe.manifest">
-              <Actions />
-            </File>
             <File FileName="SAPBusinessOneSDK.dll">
               <Actions />
             </File>
@@ -74,9 +71,6 @@
               <Actions />
             </File>
             <File FileName="PriceList.vshost.exe.config">
-              <Actions />
-            </File>
-            <File FileName="PriceList.vshost.exe.manifest">
               <Actions />
             </File>
             <File FileName="SAPBusinessOneSDK.dll">
@@ -112,9 +106,6 @@
             <File FileName="PriceList.vshost.exe.config">
               <Actions />
             </File>
-            <File FileName="PriceList.vshost.exe.manifest">
-              <Actions />
-            </File>
             <File FileName="SAPBusinessOneSDK.dll">
               <Actions />
             </File>
@@ -144,9 +135,6 @@
               <Actions />
             </File>
             <File FileName="PriceList.vshost.exe.config">
-              <Actions />
-            </File>
-            <File FileName="PriceList.vshost.exe.manifest">
               <Actions />
             </File>
             <File FileName="SAPBusinessOneSDK.dll">

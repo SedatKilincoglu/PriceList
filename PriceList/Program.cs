@@ -30,14 +30,15 @@ namespace PriceList
                 {
                     oApp = new Application(args[0]);
                 }
+                ConnectToUI();
+                fillPaymList();
+                OrganizeTables();
                 Menu MyMenu = new Menu();
                 MyMenu.AddMenuItems();
                 oApp.RegisterMenuEventHandler(MyMenu.SBO_Application_MenuEvent);
                 Application.SBO_Application.AppEvent += new SAPbouiCOM._IApplicationEvents_AppEventEventHandler(SBO_Application_AppEvent);
                 
-                ConnectToUI();
-                fillPaymList();
-                OrganizeTables();
+
                 SBO_Application.ItemEvent += new SAPbouiCOM._IApplicationEvents_ItemEventEventHandler(SBO_Application_ItemEvent);
                 oApp.Run();
                
@@ -99,7 +100,7 @@ namespace PriceList
             CreateField("SML_PRCITEM", "ItemCode", "Kalem Tanıtıcı", SAPbobsCOM.BoFieldTypes.db_Alpha, 100);
             CreateField("SML_PRCITEM", "ItemName", "Kalem Açıklama", SAPbobsCOM.BoFieldTypes.db_Alpha, 254);
             CreateField("SML_PRCITEM", "Price", "Fiyat", SAPbobsCOM.BoFieldTypes.db_Float, 10, SAPbobsCOM.BoFldSubTypes.st_Price);
-            CreateField("SML_PRCITEM", "Currency", "Döviz Cinsi", SAPbobsCOM.BoFieldTypes.db_Alpha, 3);
+            CreateField("SML_PRCITEM", "Currency", "Döviz Cinsi", SAPbobsCOM.BoFieldTypes.db_Alpha, 3); 
 
             CreateUDO("SML_PRCHEAD", "SML_PRCITEM","Fiyat Listeleri", SAPbobsCOM.BoUDOObjType.boud_Document);
 
@@ -209,7 +210,6 @@ namespace PriceList
                 oUDF.Description = MyFieldDescrition;
                 oUDF.Type = MyFieldType;
                 oUDF.SubType = MyFieldSubType;
-
                 if (MyFieldSize > 0)
                     oUDF.EditSize = MyFieldSize;
 
@@ -348,7 +348,9 @@ namespace PriceList
                         // Bayrağı ayarla (sonsuz döngüyü engellemek için)
                         isUpdating = true;
                         price.Value = prcRecordSet.Fields.Item("PrcPrice").Value.ToString() + " " + prcRecordSet.Fields.Item("PrcCurrency").Value.ToString();
-                        discount.Value = prcRecordSet.Fields.Item(paymCode).Value.ToString();
+                        var disc = prcRecordSet.Fields.Item(paymCode).Value.ToString();
+                        disc = disc.Replace(',', '.');
+                        discount.Value = disc;
                     }
                 }
 
@@ -407,6 +409,7 @@ namespace PriceList
                             price.Item.Enabled = true;
                             discount.Item.Enabled = true;
                             price.Value = prcRecordSet.Fields.Item("PrcPrice").Value.ToString() + " " + prcRecordSet.Fields.Item("PrcCurrency").Value.ToString();
+                            var a = prcRecordSet.Fields.Item(paymCode).Value.ToString();
                             discount.Value = prcRecordSet.Fields.Item(paymCode).Value.ToString();
                         }
                     }

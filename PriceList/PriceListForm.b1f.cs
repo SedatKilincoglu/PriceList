@@ -41,6 +41,7 @@ namespace PriceList
             this.EditText0 = ((SAPbouiCOM.EditText)(this.GetItem("Item_1").Specific));
             this.lb_Vf = ((SAPbouiCOM.StaticText)(this.GetItem("lb_Vf").Specific));
             this.lb_Vu = ((SAPbouiCOM.StaticText)(this.GetItem("lb_Vu").Specific));
+            this.lb_Vu.ClickAfter += new SAPbouiCOM._IStaticTextEvents_ClickAfterEventHandler(this.lb_Vu_ClickAfter);
             this.tx_VF = ((SAPbouiCOM.EditText)(this.GetItem("tx_VF").Specific));
             this.tx_VU = ((SAPbouiCOM.EditText)(this.GetItem("tx_VU").Specific));
             this.Button0 = ((SAPbouiCOM.Button)(this.GetItem("1").Specific));
@@ -62,8 +63,9 @@ namespace PriceList
         {
             this.DataLoadAfter += new SAPbouiCOM.Framework.FormBase.DataLoadAfterHandler(this.Form_DataLoadAfter);
             this.ResizeAfter += new SAPbouiCOM.Framework.FormBase.ResizeAfterHandler(this.Form_ResizeAfter);
-            //  Program.SBO_Application.ItemEvent += new SAPbouiCOM._IApplicationEvents_ItemEventEventHandler(SBO_Application_ItemEvent);
-            this.LoadAfter += new LoadAfterHandler(this.Form_LoadAfter);
+            //   Program.SBO_Application.ItemEvent += new SAPbouiCOM._IApplicationEvents_ItemEventEventHandler(SBO_Application_ItemEvent);
+            this.LoadAfter += new SAPbouiCOM.Framework.FormBase.LoadAfterHandler(this.Form_LoadAfter);
+            this.DataDeleteBefore += new DataDeleteBeforeHandler(this.Form_DataDeleteBefore);
 
         }
 
@@ -101,6 +103,7 @@ namespace PriceList
         {
             if (!Program.AuthorizedUser)
             {
+                Program.SBO_Application.MessageBox("Yetkiniz Yok");
                 BubbleEvent = false;
                 return;
             }
@@ -138,9 +141,9 @@ namespace PriceList
                 {
                     SAPbouiCOM.EditText priceCell = (SAPbouiCOM.EditText)mx_Price.Columns.Item("Price").Cells.Item(i + 1).Specific;
                     SAPbouiCOM.ComboBox currCell = (SAPbouiCOM.ComboBox)mx_Price.Columns.Item("Currency").Cells.Item(i + 1).Specific;
-                    if (float.Parse(priceCell.Value) <= 0 || priceCell.Value == null || currCell.Value == "")
+                    if (priceCell.Value == null || currCell.Value == "")
                     {
-                        setStatusBarText("Lütfen Fiyatları ve para birimlerini doldurun", "error");
+                        setStatusBarText("Lütfen Para birimlerini doldurun", "error");
                         MainSAPForm.Freeze(false);
                         return;
                     }
@@ -163,6 +166,7 @@ namespace PriceList
         {
             if (!Program.AuthorizedUser)
             {
+                Program.SBO_Application.MessageBox("Yetkiniz Yok");
                 BubbleEvent = false;
                 return;
             }
@@ -251,6 +255,7 @@ namespace PriceList
         {
             if (!Program.AuthorizedUser)
             {
+                Program.SBO_Application.MessageBox("Yetkiniz Yok");
                 BubbleEvent = false;
                 return;
             }
@@ -308,6 +313,25 @@ namespace PriceList
         {
 
             
+        }
+
+        private void Form_DataDeleteBefore(ref BusinessObjectInfo pVal, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+            if (!Program.AuthorizedUser)
+            {
+                Program.SBO_Application.MessageBox("Silme Yetkiniz Yok");
+                BubbleEvent = false;
+                return;
+            }
+
+
+        }
+
+        private void lb_Vu_ClickAfter(object sboObject, SBOItemEventArg pVal)
+        {
+
+
         }
     }
 }
