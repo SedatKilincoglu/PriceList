@@ -6,6 +6,7 @@ using SAPbobsCOM;
 using SAPbouiCOM;
 using EROPASAPLib;
 using System.Linq;
+using System.Globalization;
 
 namespace PriceList
 {
@@ -14,52 +15,52 @@ namespace PriceList
     class DiscountForm : UserFormBase
     {
         public string BaseFormUID { get; set; }
-
-        public DiscountForm()
-        { 
+        public string LinkDocEntry { get; set; }
+        public DiscountForm(String DocEntry = "")
+        {
+            LinkDocEntry = DocEntry;
         }
-        private SAPbouiCOM.Matrix mx_Disc;
-        private SAPbouiCOM.StaticText lb_desc;
-        private SAPbouiCOM.EditText tx_Desc;
-        private SAPbouiCOM.StaticText lb_Vf;
-        private SAPbouiCOM.StaticText lb_Vu;
-        private SAPbouiCOM.EditText tx_VF;
-        private SAPbouiCOM.EditText tx_VU;
-        private SAPbouiCOM.Button Button0;
-        private SAPbouiCOM.Button Button1;
-        private SAPbouiCOM.Button bt_Add;
-        private SAPbouiCOM.EditText tx_Doc;
-        private SAPbouiCOM.StaticText lb_Doc;
-        private SAPbobsCOM.Recordset PaymentRecordSet;
-        private SAPbouiCOM.Button bt_Del;
-        private SAPbouiCOM.ComboBox cm_paym;
-        private SAPbouiCOM.EditText tx_ch;
-        private SAPbouiCOM.Button bt_ChAll;
+        private Matrix mx_Disc;
+        private StaticText lb_desc;
+        private EditText tx_Desc;
+        private StaticText lb_Vf;
+        private StaticText lb_Vu;
+        private EditText tx_VF;
+        private EditText tx_VU;
+        private Button Button0;
+        private Button Button1;
+        private Button bt_Add;
+        private EditText tx_Doc;
+        private StaticText lb_Doc;
+        private Button bt_Del;
+        private ComboBox cm_paym;
+        private EditText tx_ch;
+        private Button bt_ChAll;
         /// <summary>
         /// Initialize components. Called by framework after form created.
         /// </summary>
         public override void OnInitializeComponent()
         {
-            this.lb_desc = ((SAPbouiCOM.StaticText)(this.GetItem("lb_desc").Specific));
-            this.tx_Desc = ((SAPbouiCOM.EditText)(this.GetItem("tx_Desc").Specific));
-            this.lb_Vf = ((SAPbouiCOM.StaticText)(this.GetItem("lb_Vf").Specific));
-            this.lb_Vu = ((SAPbouiCOM.StaticText)(this.GetItem("lb_Vu").Specific));
-            this.tx_VF = ((SAPbouiCOM.EditText)(this.GetItem("tx_VF").Specific));
-            this.tx_VU = ((SAPbouiCOM.EditText)(this.GetItem("tx_VU").Specific));
-            this.Button0 = ((SAPbouiCOM.Button)(this.GetItem("1").Specific));
-            this.Button0.ClickBefore += new SAPbouiCOM._IButtonEvents_ClickBeforeEventHandler(this.Button0_ClickBefore);
-            this.Button1 = ((SAPbouiCOM.Button)(this.GetItem("2").Specific));
-            this.bt_Add = ((SAPbouiCOM.Button)(this.GetItem("bt_Add").Specific));
-            this.bt_Add.ClickBefore += new SAPbouiCOM._IButtonEvents_ClickBeforeEventHandler(this.bt_Add_ClickBefore);
-            this.tx_Doc = ((SAPbouiCOM.EditText)(this.GetItem("tx_Doc").Specific));
-            this.lb_Doc = ((SAPbouiCOM.StaticText)(this.GetItem("lb_Doc").Specific));
-            this.mx_Disc = ((SAPbouiCOM.Matrix)(this.GetItem("mx_Disc").Specific));
-            this.bt_Del = ((SAPbouiCOM.Button)(this.GetItem("bt_Del").Specific));
-            this.bt_Del.ClickBefore += new SAPbouiCOM._IButtonEvents_ClickBeforeEventHandler(this.bt_Del_ClickBefore);
-            this.cm_paym = ((SAPbouiCOM.ComboBox)(this.GetItem("cm_paym").Specific));
-            this.tx_ch = ((SAPbouiCOM.EditText)(this.GetItem("tx_ch").Specific));
-            this.bt_ChAll = ((SAPbouiCOM.Button)(this.GetItem("bt_ChAll").Specific));
-            this.bt_ChAll.ClickBefore += new SAPbouiCOM._IButtonEvents_ClickBeforeEventHandler(this.bt_ChAll_ClickBefore);
+            this.lb_desc = ((StaticText)(this.GetItem("lb_desc").Specific));
+            this.tx_Desc = ((EditText)(this.GetItem("tx_Desc").Specific));
+            this.lb_Vf = ((StaticText)(this.GetItem("lb_Vf").Specific));
+            this.lb_Vu = ((StaticText)(this.GetItem("lb_Vu").Specific));
+            this.tx_VF = ((EditText)(this.GetItem("tx_VF").Specific));
+            this.tx_VU = ((EditText)(this.GetItem("tx_VU").Specific));
+            this.Button0 = ((Button)(this.GetItem("1").Specific));
+            this.Button0.ClickBefore += new _IButtonEvents_ClickBeforeEventHandler(this.Button0_ClickBefore);
+            this.Button1 = ((Button)(this.GetItem("2").Specific));
+            this.bt_Add = ((Button)(this.GetItem("bt_Add").Specific));
+            this.bt_Add.ClickBefore += new _IButtonEvents_ClickBeforeEventHandler(this.bt_Add_ClickBefore);
+            this.tx_Doc = ((EditText)(this.GetItem("tx_Doc").Specific));
+            this.lb_Doc = ((StaticText)(this.GetItem("lb_Doc").Specific));
+            this.mx_Disc = ((Matrix)(this.GetItem("mx_Disc").Specific));
+            this.bt_Del = ((Button)(this.GetItem("bt_Del").Specific));
+            this.bt_Del.ClickBefore += new _IButtonEvents_ClickBeforeEventHandler(this.bt_Del_ClickBefore);
+            this.cm_paym = ((ComboBox)(this.GetItem("cm_paym").Specific));
+            this.tx_ch = ((EditText)(this.GetItem("tx_ch").Specific));
+            this.bt_ChAll = ((Button)(this.GetItem("bt_ChAll").Specific));
+            this.bt_ChAll.ClickBefore += new _IButtonEvents_ClickBeforeEventHandler(this.bt_ChAll_ClickBefore);
             this.OnCustomInitialize();
 
         }
@@ -68,21 +69,17 @@ namespace PriceList
         /// </summary>
         public override void OnInitializeFormEvents()
         {
-            this.DataDeleteBefore += new DataDeleteBeforeHandler(this.Form_DataDeleteBefore);
+            this.DataDeleteBefore += new SAPbouiCOM.Framework.FormBase.DataDeleteBeforeHandler(this.Form_DataDeleteBefore);
+            this.DataLoadAfter += new SAPbouiCOM.Framework.FormBase.DataLoadAfterHandler(this.Form_DataLoadAfter);
+            this.ResizeAfter += new ResizeAfterHandler(this.Form_ResizeAfter);
 
         }
 
         private void OnCustomInitialize()
         {
-            PaymentRecordSet = (SAPbobsCOM.Recordset)Program.diCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset);
             AddMatrixColumns();
         }
 
-        private void setMatrixData(SAPbouiCOM.Matrix mtName, String colName, int rowIndex, String Data)
-        {
-            var tmpval = (SAPbouiCOM.EditText)mtName.Columns.Item(colName).Cells.Item(rowIndex).Specific;
-            tmpval.Value = Data;
-        }
 
         private void setStatusBarText(string Message, string Type)
         {
@@ -105,6 +102,11 @@ namespace PriceList
 
         private void Button0_ClickBefore(object sboObject, SAPbouiCOM.SBOItemEventArg pVal, out bool BubbleEvent)
         {
+            if (pVal.FormMode == 0)
+            {
+                BubbleEvent = true;
+                return;
+            }
             BubbleEvent = false;
             MainSAPForm = Program.SBO_Application.Forms.ActiveForm;
             if (MainSAPForm.Mode == BoFormMode.fm_OK_MODE)
@@ -131,8 +133,8 @@ namespace PriceList
                 }
                 setStatusBarText("Silinen satırlar ayıklandı", "none");
             }
-            catch(Exception e)
-            { 
+            catch (Exception e)
+            {
                 Program.SBO_Application.StatusBar.SetText("Hata: " + e.Message, SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Error);
                 return;
             }
@@ -156,19 +158,6 @@ namespace PriceList
             BubbleEvent = true;
         }
 
-        private bool isExistonMatrix(SAPbouiCOM.Matrix matrix, string ColName, string FindingValue)
-        {
-
-            for (var ix = 0; ix < matrix.RowCount; ix++)
-            {
-                SAPbouiCOM.EditText findingCell = (SAPbouiCOM.EditText)matrix.Columns.Item(ColName).Cells.Item(ix + 1).Specific;
-                if (findingCell.Value == FindingValue)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
 
         private void PassFilterData(Models.ItemSet[] selectedMaterials)
         {
@@ -177,8 +166,10 @@ namespace PriceList
             Models.ItemSet[] matrixItems = new Models.ItemSet[] { };
             for (var i = 0; i < mx_Disc.RowCount; i++)
             {
-                Models.ItemSet matrixItem = new Models.ItemSet();
-                matrixItem.itemCode = ((SAPbouiCOM.EditText)mx_Disc.Columns.Item("ItemCode").Cells.Item(i + 1).Specific).Value;
+                Models.ItemSet matrixItem = new Models.ItemSet
+                {
+                    itemCode = ((EditText)mx_Disc.Columns.Item("ItemCode").Cells.Item(i + 1).Specific).Value
+                };
                 matrixItems = matrixItems.Append(matrixItem).ToArray();
             }
             for (var i = 0; i < selectedMaterials.Length; i++)
@@ -198,10 +189,9 @@ namespace PriceList
                 }
                 mx_Disc.AddRow();
                 mx_Disc.ClearRowData(mx_Disc.RowCount);
-                
-                SAPbouiCOM.EditText itemCodeCell = (SAPbouiCOM.EditText)mx_Disc.Columns.Item("ItemCode").Cells.Item(mx_Disc.VisualRowCount).Specific;
-                SAPbouiCOM.EditText itemNameCell = (SAPbouiCOM.EditText)mx_Disc.Columns.Item("ItemName").Cells.Item(mx_Disc.VisualRowCount).Specific;
-                SAPbouiCOM.EditText LineIdCell = (SAPbouiCOM.EditText)mx_Disc.Columns.Item("#").Cells.Item(mx_Disc.VisualRowCount).Specific;
+                EditText itemCodeCell = (EditText)mx_Disc.Columns.Item("ItemCode").Cells.Item(mx_Disc.VisualRowCount).Specific;
+                EditText itemNameCell = (EditText)mx_Disc.Columns.Item("ItemName").Cells.Item(mx_Disc.VisualRowCount).Specific;
+                EditText LineIdCell = (EditText)mx_Disc.Columns.Item("#").Cells.Item(mx_Disc.VisualRowCount).Specific;
                 itemCodeCell.Value = selectedMaterials[i].itemCode;
                 itemNameCell.Value = selectedMaterials[i].itemName;
                 LineIdCell.Value = null;
@@ -221,9 +211,8 @@ namespace PriceList
 
         private void AddMatrixColumns()
         {
-            SAPbouiCOM.Form oForm = Program.SBO_Application.Forms.ActiveForm;
-            SAPbouiCOM.Columns oColumns = mx_Disc.Columns;
-            cm_paym.ValidValues.Add("E", "Ek İndirim Yetkisi");
+            Columns oColumns = mx_Disc.Columns;
+            //cm_paym.ValidValues.Add("E", "Ek İndirim Yetkisi");
             // Sorguyu çalıştır
 
             foreach (Models.Paym paym in Program.paymList)
@@ -234,16 +223,27 @@ namespace PriceList
 
                     // Matrix'e dinamik kolon ekle
                     string colId = "col" + paymentCode;
+
                     if (!ColumnExists(oColumns, colId)) // Eğer kolon zaten yoksa
                     {
-                        SAPbouiCOM.Column oColumn = oColumns.Add(colId, SAPbouiCOM.BoFormItemTypes.it_EDIT);
+                        Column oColumn = oColumns.Add(colId, BoFormItemTypes.it_EDIT);
                         oColumn.RightJustified = true;
-                        oColumn.TitleObject.Caption = $"İndirim({paymentName})";
+                        oColumn.TitleObject.Caption = $"İndirim % ({paymentName})";
                         oColumn.DataBind.SetBound(true, "@SML_DSCITEM", "U_" + paymentCode); // UserDataSource ile bağla
                         oColumn.Editable = true;
                     }
+                    cm_paym.ValidValues.Add(paymentCode, $"İndirim % ({paymentName})");
+                    colId = "colA" + paymentCode;
 
-                    cm_paym.ValidValues.Add(paymentCode, paymentName);
+                    if (!ColumnExists(oColumns, colId)) // Eğer kolon zaten yoksa
+                    {
+                        Column oColumn = oColumns.Add(colId, BoFormItemTypes.it_EDIT);
+                        oColumn.RightJustified = true;
+                        oColumn.TitleObject.Caption = $"Ek İndirim Yetkisi % ({paymentName})";
+                        oColumn.DataBind.SetBound(true, "@SML_DSCITEM", "U_AddDisc" + paymentCode); // UserDataSource ile bağla
+                        oColumn.Editable = true;
+                    }
+                    cm_paym.ValidValues.Add("A" + paymentCode, $"Ek İndirim Yetkisi % ({paymentName})");
                 }
             }
         }
@@ -265,18 +265,57 @@ namespace PriceList
         private void Form_DataLoadAfter(ref BusinessObjectInfo pVal)
         {
             mx_Disc.AutoResizeColumns();
+            try
+            {
+                DateTime today = DateTime.Today;
+                int rowCount = mx_Disc.RowCount;
+                int rowcolor;
+                string validUntilStr = tx_VU.Value;
+                DateTime.TryParseExact(tx_VU.Value, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime validUntil);
+                int diffDays = (validUntil - today).Days;
+
+                if (diffDays >= 2)
+                {
+                    rowcolor = Program.colors["green"];
+                } 
+                else if (diffDays >= 0)
+                {
+                    rowcolor = Program.colors["yellow"];
+                }
+                else
+                {
+                    rowcolor = Program.colors["red"];
+                }
+
+                for (int i = 1; i <= rowCount; i++)
+                {
+                    mx_Disc.CommonSetting.SetRowBackColor(i, rowcolor);
+
+                }
+            } 
+            catch
+            {
+
+            }
+
         }
 
         private void Form_ResizeAfter(SBOItemEventArg pVal)
         {
             mx_Disc.AutoResizeColumns();
+            if (LinkDocEntry != "")
+            {
+                SAPbouiCOM.Form prcForm;
+                prcForm = Program.SBO_Application.Forms.Item(pVal.FormUID);
+                prcForm.Mode = BoFormMode.fm_FIND_MODE;
+                tx_Doc.Item.Enabled = true;
+                tx_Doc.Value = LinkDocEntry;
+                Button0.Item.Click();
+                LinkDocEntry = "";
+            }
         }
 
-        private void Form_UnloadAfter(SBOItemEventArg pVal)
-        {
-            
-        }
-        
+
 
         public void SBO_Application_FormDataEvent(ref SAPbouiCOM.BusinessObjectInfo businessObjectInfo, out bool bubbleEvent)
         {
@@ -284,8 +323,8 @@ namespace PriceList
             if ((businessObjectInfo.EventType == SAPbouiCOM.BoEventTypes.et_FORM_DATA_ADD ||
                 businessObjectInfo.EventType == SAPbouiCOM.BoEventTypes.et_FORM_DATA_UPDATE
                 ) &&
-                !businessObjectInfo.BeforeAction && 
-                businessObjectInfo.ActionSuccess) 
+                !businessObjectInfo.BeforeAction &&
+                businessObjectInfo.ActionSuccess)
             {
                 // Tetiklenen formu al
                 SAPbouiCOM.Form oForm = Program.SBO_Application.Forms.Item(businessObjectInfo.FormUID);
@@ -297,8 +336,6 @@ namespace PriceList
                 }
             }
         }
-         
-        
 
         private void bt_Del_ClickBefore(object sboObject, SBOItemEventArg pVal, out bool BubbleEvent)
         {
@@ -320,7 +357,6 @@ namespace PriceList
             {
                 setStatusBarText("Silinecek satır seçilmedi.", "warning");
             }
-
         }
 
         private void DeleteMatrixRow(SAPbouiCOM.Matrix matrix, int rowIndex)
@@ -348,11 +384,6 @@ namespace PriceList
             }
         }
 
-        private void Button2_ClickBefore(object sboObject, SBOItemEventArg pVal, out bool BubbleEvent)
-        {
-            BubbleEvent = true;
-
-        }
 
         private void bt_ChAll_ClickBefore(object sboObject, SBOItemEventArg pVal, out bool BubbleEvent)
         {
@@ -377,7 +408,7 @@ namespace PriceList
             {
                 colId = "col" + cm_paym.Value;
             }
-            
+
             MainSAPForm = Program.SBO_Application.Forms.ActiveForm;
             MainSAPForm.Freeze(true);
             for (int i = 0; i < mx_Disc.RowCount; i++)

@@ -50,6 +50,15 @@
     <Reference Include="SAPBusinessOneSDK" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="SQL\InsertScript.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -73,9 +82,21 @@
     <Compile Include="PriceListForm.b1f.cs">
       <DependentUpon>PriceListForm.b1f</DependentUpon>
     </Compile>
+    <Compile Include="PriceListReport.b1f.cs">
+      <DependentUpon>PriceListReport.b1f</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Menu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="PriceListReport.b1f">
+      <FormCategory>UserForm</FormCategory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="price-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="price_icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<AddOnRegData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" SlientInstallation="No" SlientUpgrade="No" Partnernmsp="SmLabs PriceList" SchemaVersion="3.0" Type="" MultipleVersion="false" OnDemand="" OnPremise="" ExtName="SmLabs PriceList" ExtVersion="1.0.0.03" Contdata="" Partner="SmLabs" DBType="MSSQL" ClientType="A">
+<AddOnRegData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" SlientInstallation="No" SlientUpgrade="No" Partnernmsp="SmLabs PriceList" SchemaVersion="3.0" Type="" MultipleVersion="false" OnDemand="" OnPremise="" ExtName="SmLabs PriceList" ExtVersion="1.0.1.01" Contdata="" Partner="SmLabs" DBType="MSSQL" ClientType="A">
   <Validity>
     <SBOCompatibility>
       <Version From="" To="" />
@@ -21,7 +21,61 @@
       <x86 AddonExe="C:\Users\sedat\Desktop\ERP Dosyalar\Web Browser Test\PriceList\PriceList\bin\Debug\PriceList.exe" AddonSig="">
         <Installation>
           <Files>
+            <File FileName="CrystalDecisions.CrystalReports.Engine.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.ClientDoc.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.CommLayer.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.CommonControls.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.CommonObjectModel.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.Controllers.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.CubeDefModel.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.DataDefModel.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.DataSetConversion.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.ObjectFactory.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.Prompting.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.ReportDefModel.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.XmlSerialize.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportSource.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.Shared.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.Windows.Forms.dll">
+              <Actions />
+            </File>
             <File FileName="EROPASAPLib.dll">
+              <Actions />
+            </File>
+            <File FileName="FlashControlV71.dll">
+              <Actions />
+            </File>
+            <File FileName="Newtonsoft.Json.dll">
               <Actions />
             </File>
             <File FileName="PriceList.b1s">
@@ -42,17 +96,83 @@
             <File FileName="PriceList.vshost.exe.config">
               <Actions />
             </File>
+            <File FileName="PriceList.vshost.exe.manifest">
+              <Actions />
+            </File>
             <File FileName="SAPBusinessOneSDK.dll">
               <Actions />
             </File>
             <File FileName="SAPSQLBuilder.dll">
+              <Actions />
+            </File>
+            <File FileName="ShockwaveFlashObjects.dll">
+              <Actions />
+            </File>
+            <File FileName="stdole.dll">
+              <Actions />
+            </File>
+            <File FileName="SQL\InsertScript.sql">
               <Actions />
             </File>
           </Files>
         </Installation>
         <Uninstallation>
           <Files>
+            <File FileName="CrystalDecisions.CrystalReports.Engine.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.ClientDoc.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.CommLayer.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.CommonControls.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.CommonObjectModel.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.Controllers.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.CubeDefModel.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.DataDefModel.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.DataSetConversion.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.ObjectFactory.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.Prompting.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.ReportDefModel.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.XmlSerialize.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportSource.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.Shared.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.Windows.Forms.dll">
+              <Actions />
+            </File>
             <File FileName="EROPASAPLib.dll">
+              <Actions />
+            </File>
+            <File FileName="FlashControlV71.dll">
+              <Actions />
+            </File>
+            <File FileName="Newtonsoft.Json.dll">
               <Actions />
             </File>
             <File FileName="PriceList.b1s">
@@ -73,10 +193,22 @@
             <File FileName="PriceList.vshost.exe.config">
               <Actions />
             </File>
+            <File FileName="PriceList.vshost.exe.manifest">
+              <Actions />
+            </File>
             <File FileName="SAPBusinessOneSDK.dll">
               <Actions />
             </File>
             <File FileName="SAPSQLBuilder.dll">
+              <Actions />
+            </File>
+            <File FileName="ShockwaveFlashObjects.dll">
+              <Actions />
+            </File>
+            <File FileName="stdole.dll">
+              <Actions />
+            </File>
+            <File FileName="SQL\InsertScript.sql">
               <Actions />
             </File>
           </Files>
@@ -85,7 +217,61 @@
       <x64 AddonExe="C:\Users\sedat\Desktop\ERP Dosyalar\Web Browser Test\PriceList\PriceList\bin\Debug\PriceList.exe" AddonSig="">
         <Installation>
           <Files>
+            <File FileName="CrystalDecisions.CrystalReports.Engine.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.ClientDoc.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.CommLayer.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.CommonControls.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.CommonObjectModel.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.Controllers.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.CubeDefModel.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.DataDefModel.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.DataSetConversion.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.ObjectFactory.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.Prompting.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.ReportDefModel.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.XmlSerialize.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportSource.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.Shared.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.Windows.Forms.dll">
+              <Actions />
+            </File>
             <File FileName="EROPASAPLib.dll">
+              <Actions />
+            </File>
+            <File FileName="FlashControlV71.dll">
+              <Actions />
+            </File>
+            <File FileName="Newtonsoft.Json.dll">
               <Actions />
             </File>
             <File FileName="PriceList.b1s">
@@ -106,17 +292,83 @@
             <File FileName="PriceList.vshost.exe.config">
               <Actions />
             </File>
+            <File FileName="PriceList.vshost.exe.manifest">
+              <Actions />
+            </File>
             <File FileName="SAPBusinessOneSDK.dll">
               <Actions />
             </File>
             <File FileName="SAPSQLBuilder.dll">
+              <Actions />
+            </File>
+            <File FileName="ShockwaveFlashObjects.dll">
+              <Actions />
+            </File>
+            <File FileName="stdole.dll">
+              <Actions />
+            </File>
+            <File FileName="SQL\InsertScript.sql">
               <Actions />
             </File>
           </Files>
         </Installation>
         <Uninstallation>
           <Files>
+            <File FileName="CrystalDecisions.CrystalReports.Engine.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.ClientDoc.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.CommLayer.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.CommonControls.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.CommonObjectModel.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.Controllers.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.CubeDefModel.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.DataDefModel.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.DataSetConversion.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.ObjectFactory.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.Prompting.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.ReportDefModel.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportAppServer.XmlSerialize.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.ReportSource.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.Shared.dll">
+              <Actions />
+            </File>
+            <File FileName="CrystalDecisions.Windows.Forms.dll">
+              <Actions />
+            </File>
             <File FileName="EROPASAPLib.dll">
+              <Actions />
+            </File>
+            <File FileName="FlashControlV71.dll">
+              <Actions />
+            </File>
+            <File FileName="Newtonsoft.Json.dll">
               <Actions />
             </File>
             <File FileName="PriceList.b1s">
@@ -137,10 +389,22 @@
             <File FileName="PriceList.vshost.exe.config">
               <Actions />
             </File>
+            <File FileName="PriceList.vshost.exe.manifest">
+              <Actions />
+            </File>
             <File FileName="SAPBusinessOneSDK.dll">
               <Actions />
             </File>
             <File FileName="SAPSQLBuilder.dll">
+              <Actions />
+            </File>
+            <File FileName="ShockwaveFlashObjects.dll">
+              <Actions />
+            </File>
+            <File FileName="stdole.dll">
+              <Actions />
+            </File>
+            <File FileName="SQL\InsertScript.sql">
               <Actions />
             </File>
           </Files>

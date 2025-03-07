@@ -10,7 +10,6 @@ namespace PriceList
     class FilterForm : UserFormBase
     {
         private SAPbouiCOM.Application SBO_Application;
-        private SAPbouiCOM.Form FilterSAPForm;
         
         private Action<Models.ItemSet[]> Callback;
         public FilterForm(SAPbouiCOM.Application app, Action<Models.ItemSet[]> callback)
@@ -76,6 +75,7 @@ namespace PriceList
             this.cb_InTyp.ComboSelectAfter += new SAPbouiCOM._IComboBoxEvents_ComboSelectAfterEventHandler(this.cb_InTyp_ComboSelectAfter);
             this.StaticText4 = ((SAPbouiCOM.StaticText)(this.GetItem("Item_1").Specific));
             this.cm_Fc = ((SAPbouiCOM.ComboBox)(this.GetItem("cm_Fc").Specific));
+
             this.OnCustomInitialize();
 
         }
@@ -119,7 +119,9 @@ namespace PriceList
             tx_InUntil.Item.Enabled = false;
         }
 
-        private void orgVisibles(int comp)
+
+
+        private void OrgVisibles(int comp)
         {
             SAPbouiCOM.Form oForm = Program.SBO_Application.Forms.ActiveForm;
             if (comp == 0)
@@ -157,7 +159,7 @@ namespace PriceList
         private string GetOperator()
         {
             string opr;
-            validvaluecounter = validvaluecounter + 1;
+            validvaluecounter ++;
             if (validvaluecounter == 1)
                 opr = " WHERE ";
             else
@@ -265,12 +267,12 @@ namespace PriceList
         private void cb_IcTyp_ComboSelectAfter(object sboObject, SAPbouiCOM.SBOItemEventArg pVal)
         {
 
-            orgVisibles(0);
+            OrgVisibles(0);
         }
 
         private void cb_InTyp_ComboSelectAfter(object sboObject, SAPbouiCOM.SBOItemEventArg pVal)
         {
-            orgVisibles(1);
+            OrgVisibles(1);
         }
 
         private void cm_Grp_ComboSelectAfter(object sboObject, SAPbouiCOM.SBOItemEventArg pVal)
@@ -297,7 +299,7 @@ namespace PriceList
                     ItemSubGroupRecordSet.MoveNext();
                 }
             }
-            catch(Exception e)
+            catch
             {
 
             }
@@ -318,9 +320,11 @@ namespace PriceList
             {
                 if (gr_List.DataTable.Columns.Item("Chk").Cells.Item(i).Value.ToString() == "Y")
                 {
-                    Models.ItemSet selectedMaterial = new Models.ItemSet();
-                    selectedMaterial.itemCode = gr_List.DataTable.Columns.Item("ItemCode").Cells.Item(i).Value.ToString();
-                    selectedMaterial.itemName = gr_List.DataTable.Columns.Item("ItemName").Cells.Item(i).Value.ToString();
+                    Models.ItemSet selectedMaterial = new Models.ItemSet
+                    {
+                        itemCode = gr_List.DataTable.Columns.Item("ItemCode").Cells.Item(i).Value.ToString(),
+                        itemName = gr_List.DataTable.Columns.Item("ItemName").Cells.Item(i).Value.ToString()
+                    };
                     selectedMaterials = selectedMaterials.Append(selectedMaterial).ToArray();
                 }
                 

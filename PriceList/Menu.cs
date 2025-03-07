@@ -1,5 +1,6 @@
 ﻿    using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using SAPbouiCOM.Framework;
 
@@ -9,10 +10,9 @@ namespace PriceList
     {
         public void AddMenuItems()
         {
-            SAPbouiCOM.Menus oMenus = null;
             SAPbouiCOM.MenuItem oMenuItem = null;
 
-            oMenus = Application.SBO_Application.Menus;
+            SAPbouiCOM.Menus oMenus = Application.SBO_Application.Menus;
 
             SAPbouiCOM.MenuCreationParams oCreationPackage = null;
             oCreationPackage = ((SAPbouiCOM.MenuCreationParams)(Application.SBO_Application.CreateObject(SAPbouiCOM.BoCreatableObjectType.cot_MenuCreationParams)));
@@ -23,14 +23,17 @@ namespace PriceList
             oCreationPackage.String = "Fiyat Listesi";
             oCreationPackage.Enabled = true;
             oCreationPackage.Position = -1;
-
+            string iconPath = AppDomain.CurrentDomain.BaseDirectory + "price_icon.png";
+            if (!File.Exists(iconPath))
+                Properties.Resources.price_icon.Save(iconPath, System.Drawing.Imaging.ImageFormat.Png);
+            oCreationPackage.Image = iconPath;
             oMenus = oMenuItem.SubMenus; 
 
             try
             {
                 oMenus.AddEx(oCreationPackage);
             }
-            catch (Exception e)
+            catch
             {
 
             }
@@ -44,16 +47,22 @@ namespace PriceList
                 // Create s sub menu
                 oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_STRING;
                 oCreationPackage.UniqueID = "PriceList.PriceListForm";
-                oCreationPackage.String = "Fiyat Listeleri";
+                oCreationPackage.String = "Fiyat Listesi Yönetimi";
                 oMenus.AddEx(oCreationPackage);
 
                 // Create s sub menu
                 oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_STRING;
                 oCreationPackage.UniqueID = "PriceList.DiscountForm";
-                oCreationPackage.String = "Dönemsel İndirimler";
+                oCreationPackage.String = "Dönemsel İndirim Yönetimi";
+                oMenus.AddEx(oCreationPackage);
+
+                // Create s sub menu
+                oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_STRING;
+                oCreationPackage.UniqueID = "PriceList.PriceListReport";
+                oCreationPackage.String = "Fiyat Listesi Raporları";
                 oMenus.AddEx(oCreationPackage);
             }
-            catch (Exception er)
+            catch
             { //  Menu already exists
             }
         }
@@ -73,6 +82,12 @@ namespace PriceList
                 if (pVal.BeforeAction && pVal.MenuUID == "PriceList.DiscountForm" || pVal.MenuUID == "11781")
                 {
                     DiscountForm activeForm = new DiscountForm();
+                    activeForm.Show();
+                    BubbleEvent = false;
+                }
+                if (pVal.BeforeAction && pVal.MenuUID == "PriceList.PriceListReport")
+                {
+                    PriceListReport activeForm = new PriceListReport();
                     activeForm.Show();
                     BubbleEvent = false;
                 }

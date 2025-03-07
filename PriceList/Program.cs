@@ -4,6 +4,7 @@ using SAPbouiCOM.Framework;
 using SAPbobsCOM;
 using System.Reflection;
 using System.IO;
+using System.Threading;
 
 namespace PriceList
 {
@@ -16,7 +17,18 @@ namespace PriceList
         public static SAPbobsCOM.Company diCompany;
         public static List<Models.Paym> paymList = new List<Models.Paym>();
         public static bool AuthorizedUser = false;
+        // Global bir bayrak değişkeni ekle
+        private static bool isUpdating = false;
+        private static readonly HashSet<string> SalesForms = new HashSet<string> { "149", "139","540000988" }; //149: Satış Teklifi, 139: Satın alma Siparişi,540000988: Satın alma teklifi
+        // Form ID ve satır numarasına göre önceki ItemCode değerlerini tutacak dictionary
+        private static Dictionary<string, Dictionary<int, string>> previousItemCodes = new Dictionary<string, Dictionary<int, string>>();
+        public static Dictionary<string,int> colors = new Dictionary<string,int>();
         [STAThread]
+
+        static int GetBGRColorValue(byte r, byte g, byte b)
+        {
+            return (b << 16) | (g << 8) | r;
+        }
         static void Main(string[] args)
         {
             try
@@ -31,22 +43,30 @@ namespace PriceList
                     oApp = new Application(args[0]);
                 }
                 ConnectToUI();
-                fillPaymList();
+                FillPaymList();
                 OrganizeTables();
+                Initialize();
                 Menu MyMenu = new Menu();
                 MyMenu.AddMenuItems();
                 oApp.RegisterMenuEventHandler(MyMenu.SBO_Application_MenuEvent);
                 Application.SBO_Application.AppEvent += new SAPbouiCOM._IApplicationEvents_AppEventEventHandler(SBO_Application_AppEvent);
-                
-
                 SBO_Application.ItemEvent += new SAPbouiCOM._IApplicationEvents_ItemEventEventHandler(SBO_Application_ItemEvent);
+                SBO_Application.FormDataEvent += SBO_Application_FormDataEvent;
+
                 oApp.Run();
-               
+
             }
             catch (Exception ex)
             {
                 System.Windows.Forms.MessageBox.Show(ex.Message);
             }
+        }
+
+        public static void Initialize()
+        {
+            colors.Add("green", GetBGRColorValue(93, 155, 106));
+            colors.Add("yellow", GetBGRColorValue(213, 218, 124));
+            colors.Add("red", GetBGRColorValue(199, 119, 118));
         }
 
         private static void ConnectToUI()
@@ -66,7 +86,7 @@ namespace PriceList
             diCompany = (SAPbobsCOM.Company)Program.SBO_Application.Company.GetDICompany();
         }
 
-        private static void fillPaymList()
+        private static void FillPaymList()
         {
             SAPbobsCOM.Recordset PaymentRecordSet;
             PaymentRecordSet = (SAPbobsCOM.Recordset)Program.diCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset);
@@ -76,9 +96,11 @@ namespace PriceList
 
             while (!PaymentRecordSet.EoF)
             {
-                Models.Paym payment = new Models.Paym();
-                payment.paymCode = "paym" + PaymentRecordSet.Fields.Item("PCode").Value.ToString();
-                payment.paymName = PaymentRecordSet.Fields.Item("PName").Value.ToString();
+                Models.Paym payment = new Models.Paym
+                {
+                    paymCode = "paym" + PaymentRecordSet.Fields.Item("PCode").Value.ToString(),
+                    paymName = PaymentRecordSet.Fields.Item("PName").Value.ToString()
+                };
                 paymList.Add(payment);
                 PaymentRecordSet.MoveNext();
             }
@@ -100,9 +122,9 @@ namespace PriceList
             CreateField("SML_PRCITEM", "ItemCode", "Kalem Tanıtıcı", SAPbobsCOM.BoFieldTypes.db_Alpha, 100);
             CreateField("SML_PRCITEM", "ItemName", "Kalem Açıklama", SAPbobsCOM.BoFieldTypes.db_Alpha, 254);
             CreateField("SML_PRCITEM", "Price", "Fiyat", SAPbobsCOM.BoFieldTypes.db_Float, 10, SAPbobsCOM.BoFldSubTypes.st_Price);
-            CreateField("SML_PRCITEM", "Currency", "Döviz Cinsi", SAPbobsCOM.BoFieldTypes.db_Alpha, 3); 
+            CreateField("SML_PRCITEM", "Currency", "Döviz Cinsi", SAPbobsCOM.BoFieldTypes.db_Alpha, 3);
 
-            CreateUDO("SML_PRCHEAD", "SML_PRCITEM","Fiyat Listeleri", SAPbobsCOM.BoUDOObjType.boud_Document);
+            CreateUDO("SML_PRCHEAD", "SML_PRCITEM", "Fiyat Listeleri", SAPbobsCOM.BoUDOObjType.boud_Document);
 
             CreateTable("SML_DSCHEAD", "Dönemsel İndirimler", SAPbobsCOM.BoUTBTableType.bott_Document);
             CreateField("SML_DSCHEAD", "ValidFrom", "Geçerlilik Başlangıcı", SAPbobsCOM.BoFieldTypes.db_Date, 100);
@@ -112,13 +134,14 @@ namespace PriceList
             CreateTable("SML_DSCITEM", "Dönemsel İndirim Detay", SAPbobsCOM.BoUTBTableType.bott_DocumentLines);
             CreateField("SML_DSCITEM", "ItemCode", "Kalem Tanıtıcı", SAPbobsCOM.BoFieldTypes.db_Alpha, 100);
             CreateField("SML_DSCITEM", "ItemName", "Kalem Açıklama", SAPbobsCOM.BoFieldTypes.db_Alpha, 254);
-            CreateField("SML_DSCITEM", "AdditionalDiscount", "Ek İndirim Oranı Hakkı", SAPbobsCOM.BoFieldTypes.db_Float, 10, SAPbobsCOM.BoFldSubTypes.st_Percentage);
-            foreach(Models.Paym paym in paymList)
+            //CreateField("SML_DSCITEM", "AdditionalDiscount", "Ek İndirim Oranı Hakkı", SAPbobsCOM.BoFieldTypes.db_Float, 10, SAPbobsCOM.BoFldSubTypes.st_Percentage);
+            foreach (Models.Paym paym in paymList)
             {
                 CreateField("SML_DSCITEM", paym.paymCode, "İndirim Oranı", SAPbobsCOM.BoFieldTypes.db_Float, 10, SAPbobsCOM.BoFldSubTypes.st_Percentage);
+                CreateField("SML_DSCITEM", "AddDisc" + paym.paymCode, "Ek İndirim Oranı Hakkı", SAPbobsCOM.BoFieldTypes.db_Float, 10, SAPbobsCOM.BoFldSubTypes.st_Percentage);
             }
 
-            CreateUDO("SML_DSCHEAD", "SML_DSCITEM","Dönemsel İndirimler", SAPbobsCOM.BoUDOObjType.boud_Document);
+            CreateUDO("SML_DSCHEAD", "SML_DSCITEM", "Dönemsel İndirimler", SAPbobsCOM.BoUDOObjType.boud_Document);
 
             CreateTable("SML_PRCAUTH", "Fiyat Listesi yetkilendirme", SAPbobsCOM.BoUTBTableType.bott_MasterData);
             CreateUDO("SML_PRCAUTH", "", "İndirim Yetkilendirme Tablosu", SAPbobsCOM.BoUDOObjType.boud_MasterData);
@@ -236,36 +259,29 @@ namespace PriceList
             }
         }
 
-        private static void CreateUDO(String MainTable, String ChildTable,String MenuCaption, SAPbobsCOM.BoUDOObjType ObjectType)
+        private static void CreateUDO(String MainTable, String ChildTable, String MenuCaption, BoUDOObjType ObjectType)
         {
             String UdoName = "UDO" + MainTable;
-            SAPbobsCOM.UserObjectsMD oUserObjectMD = null;
-            SAPbobsCOM.UserObjectMD_FindColumns oUDOFind = null;
-            SAPbobsCOM.UserObjectMD_FormColumns oUDOForm = null;
-            SAPbobsCOM.UserObjectMD_EnhancedFormColumns oUDOEnhancedForm = null;
             GC.Collect();
-            oUserObjectMD = diCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oUserObjectsMD) as SAPbobsCOM.UserObjectsMD;
-            oUDOFind = oUserObjectMD.FindColumns;
-            oUDOForm = oUserObjectMD.FormColumns;
-            oUDOEnhancedForm = oUserObjectMD.EnhancedFormColumns;
+            UserObjectsMD oUserObjectMD = diCompany.GetBusinessObject(BoObjectTypes.oUserObjectsMD) as UserObjectsMD;
+            UserObjectMD_FindColumns oUDOFind = oUserObjectMD.FindColumns;
             var retval = oUserObjectMD.GetByKey(UdoName);
             if (!retval)
             {
                 oUserObjectMD.Code = UdoName;
                 oUserObjectMD.Name = UdoName;
                 oUserObjectMD.TableName = MainTable;
-
                 oUserObjectMD.ObjectType = ObjectType;
-                oUserObjectMD.CanFind = SAPbobsCOM.BoYesNoEnum.tYES;
-                oUserObjectMD.CanDelete = SAPbobsCOM.BoYesNoEnum.tYES;
-                oUserObjectMD.CanCancel = SAPbobsCOM.BoYesNoEnum.tNO;
-                oUserObjectMD.CanClose = SAPbobsCOM.BoYesNoEnum.tNO;
-                oUserObjectMD.CanYearTransfer = SAPbobsCOM.BoYesNoEnum.tNO;
-                oUserObjectMD.CanLog = SAPbobsCOM.BoYesNoEnum.tNO;
-                oUserObjectMD.ManageSeries = SAPbobsCOM.BoYesNoEnum.tNO;
-                oUserObjectMD.CanCreateDefaultForm = SAPbobsCOM.BoYesNoEnum.tYES;
-                oUserObjectMD.MenuItem = SAPbobsCOM.BoYesNoEnum.tYES;
-                oUserObjectMD.EnableEnhancedForm = SAPbobsCOM.BoYesNoEnum.tNO;
+                oUserObjectMD.CanFind = BoYesNoEnum.tYES;
+                oUserObjectMD.CanDelete = BoYesNoEnum.tYES;
+                oUserObjectMD.CanCancel = BoYesNoEnum.tNO;
+                oUserObjectMD.CanClose = BoYesNoEnum.tNO;
+                oUserObjectMD.CanYearTransfer = BoYesNoEnum.tNO;
+                oUserObjectMD.CanLog = BoYesNoEnum.tNO;
+                oUserObjectMD.ManageSeries = BoYesNoEnum.tNO;
+                oUserObjectMD.CanCreateDefaultForm = BoYesNoEnum.tYES;
+                oUserObjectMD.MenuItem = BoYesNoEnum.tYES;
+                oUserObjectMD.EnableEnhancedForm = BoYesNoEnum.tNO;
                 oUserObjectMD.MenuCaption = MenuCaption;
                 if (ChildTable != "")
                 {
@@ -300,72 +316,209 @@ namespace PriceList
         }
 
 
-        // Global bir bayrak değişkeni ekle
-        private static bool isUpdating = false;
-        private static readonly HashSet<string> SalesForms = new HashSet<string> { "139", "140", "133", "149" }; // 139: Satış Siparişi, 140: İrsaliye, 133: Fatura
+
+        private static Recordset GetRecordSet(SAPbouiCOM.Form oForm, string itemCode)
+        {
+            var docDate = ((SAPbouiCOM.EditText)oForm.Items.Item("46").Specific).Value;
+            Recordset prcRecordSet;
+            prcRecordSet = (Recordset)Program.diCompany.GetBusinessObject(BoObjectTypes.BoRecordset);
+
+            string strQuery = "SELECT OITM.ItemCode,OITM.ItemName,PRC.PrcValidFrom,PRC.PrcValidUntil,PRC.PrcDescription, PRC.PrcPrice,PRC.PrcCurrency,DSC.* FROM OITM ";
+            strQuery += "LEFT JOIN ";
+            strQuery += "(SELECT PRCHEAD.U_ValidFrom AS PrcValidFrom, PRCHEAD.U_ValidUntil AS PrcValidUntil, PRCHEAD.U_Description AS PrcDescription, PRCITEM.U_ItemCode AS PrcItemCode, PRCITEM.U_Price AS PrcPrice, PRCITEM.U_Currency AS PrcCurrency FROM[@SML_PRCHEAD] PRCHEAD INNER JOIN[@SML_PRCITEM] PRCITEM ON PRCITEM.DocEntry = PRCHEAD.DocEntry) PRC ";
+            strQuery += " ON PRC.PrcItemCode = OITM.ItemCode ";
+            strQuery += " LEFT JOIN ";
+            strQuery += $" (SELECT DSCHEAD.U_ValidFrom AS DscValidFrom, DSCHEAD.U_ValidUntil AS DscValidUntil,DSCHEAD.U_Description AS DscDescription,DSCITEM.* FROM [@SML_DSCHEAD] DSCHEAD INNER JOIN [@SML_DSCITEM] DSCITEM ON DSCITEM.DocEntry = DSCHEAD.DocEntry AND DSCHEAD.U_ValidFrom <= '{docDate}' AND DSCHEAD.U_ValidUntil >= '{docDate}') DSC ";
+            strQuery += " ON  DSC.U_ItemCode = OITM.ItemCode ";
+            strQuery += $"where OITM.ItemCode = '{itemCode}' AND PRC.PrcValidFrom <= '{docDate}' AND PRC.PrcValidUntil >= '{docDate}' ";
+            prcRecordSet.DoQuery(strQuery);
+            return prcRecordSet;
+        }
+
+
+        private static void SBO_Application_FormDataEvent(ref SAPbouiCOM.BusinessObjectInfo BusinessObjectInfo, out bool BubbleEvent)
+        {
+            BubbleEvent = true;
+            //SBO_Application.StatusBar.SetText($"Form Event: {BusinessObjectInfo.EventType} Before Action: {BusinessObjectInfo.BeforeAction}", SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Error);
+
+            if (SalesForms.Contains(BusinessObjectInfo.FormTypeEx))
+            {
+                if (previousItemCodes.ContainsKey(BusinessObjectInfo.FormUID))
+                {
+                    previousItemCodes[BusinessObjectInfo.FormUID].Clear();
+                }
+
+
+                var oForm = SBO_Application.Forms.Item(BusinessObjectInfo.FormUID);
+                var oMatrix = (SAPbouiCOM.Matrix)oForm.Items.Item("38").Specific;
+
+                if (!previousItemCodes.ContainsKey(BusinessObjectInfo.FormUID))
+                {
+                    previousItemCodes[BusinessObjectInfo.FormUID] = new Dictionary<int, string>();
+                }
+
+                // Matrix'teki tüm satırları kontrol et
+                for (int row = 1; row <= oMatrix.RowCount; row++)
+                {
+                    var itemCode = ((SAPbouiCOM.EditText)oMatrix.Columns.Item("1").Cells.Item(row).Specific).Value;
+                    if (!string.IsNullOrEmpty(itemCode))
+                    {
+                        previousItemCodes[BusinessObjectInfo.FormUID][row] = itemCode;
+                    }
+                }
+            }
+
+        }
 
         private static void SBO_Application_ItemEvent(string FormUID, ref SAPbouiCOM.ItemEvent pVal, out bool BubbleEvent)
         {
             BubbleEvent = true;
+            if (pVal.FormTypeEx == "PriceList.PriceListReport" && pVal.EventType == SAPbouiCOM.BoEventTypes.et_MATRIX_LINK_PRESSED && pVal.ItemUID == "gr_List" && pVal.ColUID == "Kayıt No" && pVal.BeforeAction == false)
+            {
+                SAPbouiCOM.Form repForm;
+                repForm = SBO_Application.Forms.Item(FormUID);
+                var grid = (SAPbouiCOM.Grid)repForm.Items.Item("gr_List").Specific;
+                var DocEntry = grid.DataTable.GetValue("Kayıt No", pVal.Row).ToString();
+                var objType = grid.DataTable.GetValue("Tip", pVal.Row).ToString();
+                if (objType == "Fiyat Listesi")
+                {
+                    Form1 activeForm = new Form1(DocEntry);
+                    activeForm.Show();
+                }
+                else
+                {
+                    DiscountForm activeForm = new DiscountForm(DocEntry);
+                    activeForm.Show();
+                }
 
+            }
+            if (!SalesForms.Contains(pVal.FormTypeEx) || (pVal.EventType == SAPbouiCOM.BoEventTypes.et_FORM_UNLOAD && !pVal.BeforeAction))
+            {
+                return;
+            }
+            SAPbouiCOM.Form oForm;
+            oForm = SBO_Application.Forms.Item(FormUID);
+            oForm.Freeze(true);
             try
             {
+
+                //CardCode focus aldığında yeni kayıt. Tablonu temizle
+                if (pVal.ItemUID == "4" &&
+                         pVal.EventType == SAPbouiCOM.BoEventTypes.et_GOT_FOCUS && !pVal.BeforeAction)
+                {
+                    var cardCode = (SAPbouiCOM.EditText)oForm.Items.Item("4").Specific;
+                    if (cardCode.Value == "")
+                    {
+                        if (previousItemCodes.ContainsKey(pVal.FormUID))
+                        {
+                            previousItemCodes[pVal.FormUID].Clear();
+                        }
+                    }
+
+                }
+
                 // Sonsuz döngüyü önlemek için kontrol
-                
                 if (isUpdating) return;
 
-                //Malzeme kodu değiştiğinde
-                if (SalesForms.Contains(pVal.FormTypeEx) && pVal.ItemUID == "38" && pVal.ColUID == "1" &&
-                    pVal.EventType == SAPbouiCOM.BoEventTypes.et_VALIDATE && pVal.BeforeAction)
+                // Form kapanışını yakala
+                if (pVal.EventType == SAPbouiCOM.BoEventTypes.et_FORM_CLOSE &&
+                    !pVal.BeforeAction)
                 {
-                    var oForm = SBO_Application.Forms.Item(FormUID);
-                    var oMatrix = (SAPbouiCOM.Matrix)oForm.Items.Item("38").Specific;
-                    var docDate = (SAPbouiCOM.EditText)oForm.Items.Item("46").Specific;
-                    var itemCode = ((SAPbouiCOM.EditText)oMatrix.Columns.Item("1").Cells.Item(pVal.Row).Specific);
-                    var paymCode = ((SAPbouiCOM.ComboBox)oForm.Items.Item("47").Specific).Value;
-                    paymCode = paymCode.Trim();
-                    paymCode = paymCode.Replace("-", "N");
-                    paymCode = "U_Paym" + paymCode;
-                    var price = ((SAPbouiCOM.EditText)oMatrix.Columns.Item("14").Cells.Item(pVal.Row).Specific);
-                    var discount = ((SAPbouiCOM.EditText)oMatrix.Columns.Item("15").Cells.Item(pVal.Row).Specific);
-                    // Fiyat sorgusu
-                    SAPbobsCOM.Recordset prcRecordSet;
-                    prcRecordSet = (SAPbobsCOM.Recordset)Program.diCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset);
-
-                    string strQuery = "SELECT OITM.ItemCode,OITM.ItemName,PRC.PrcValidFrom,PRC.PrcValidUntil,PRC.PrcDescription, PRC.PrcPrice,PRC.PrcCurrency,DSC.* FROM OITM ";
-                    strQuery = strQuery + "LEFT JOIN ";
-                    strQuery = strQuery + "(SELECT PRCHEAD.U_ValidFrom AS PrcValidFrom, PRCHEAD.U_ValidUntil AS PrcValidUntil, PRCHEAD.U_Description AS PrcDescription, PRCITEM.U_ItemCode AS PrcItemCode, PRCITEM.U_Price AS PrcPrice, PRCITEM.U_Currency AS PrcCurrency FROM[@SML_PRCHEAD] PRCHEAD INNER JOIN[@SML_PRCITEM] PRCITEM ON PRCITEM.DocEntry = PRCHEAD.DocEntry) PRC ";
-                    strQuery = strQuery + " ON PRC.PrcItemCode = OITM.ItemCode ";
-                    strQuery = strQuery + " LEFT JOIN ";
-                    strQuery = strQuery + " (SELECT DSCHEAD.U_ValidFrom AS DscValidFrom, DSCHEAD.U_ValidUntil AS DscValidUntil,DSCHEAD.U_Description AS DscDescription,DSCITEM.* FROM [@SML_DSCHEAD] DSCHEAD INNER JOIN [@SML_DSCITEM] DSCITEM ON DSCITEM.DocEntry = DSCHEAD.DocEntry) DSC ";
-                    strQuery = strQuery + " ON  DSC.U_ItemCode = OITM.ItemCode ";
-                    strQuery = strQuery + $"where OITM.ItemCode = '{itemCode.Value}' AND PRC.PrcValidFrom <= '{docDate.Value}' AND PRC.PrcValidUntil >= '{docDate.Value}' ";
-
-                    prcRecordSet.DoQuery(strQuery);
-
-                    if (!prcRecordSet.EoF)
+                    // Form kapanırken dictionary'den temizle
+                    if (previousItemCodes.ContainsKey(FormUID))
                     {
-                        // Bayrağı ayarla (sonsuz döngüyü engellemek için)
-                        isUpdating = true;
-                        price.Value = prcRecordSet.Fields.Item("PrcPrice").Value.ToString() + " " + prcRecordSet.Fields.Item("PrcCurrency").Value.ToString();
-                        var disc = prcRecordSet.Fields.Item(paymCode).Value.ToString();
-                        disc = disc.Replace(',', '.');
-                        discount.Value = disc;
+                        previousItemCodes.Remove(FormUID);
                     }
                 }
 
-                //Belge Tarihi ya da Ödeme Koşulu değiştiğinde
-                if ((SalesForms.Contains(pVal.FormTypeEx) && 
-                    pVal.ItemUID == "47" && 
-                    pVal.EventType == SAPbouiCOM.BoEventTypes.et_COMBO_SELECT && 
-                    !pVal.BeforeAction) 
-                    ||
-                    (SalesForms.Contains(pVal.FormTypeEx) && 
-                    (pVal.ItemUID == "46" || pVal.ItemUID == "10") && 
-                    pVal.EventType == SAPbouiCOM.BoEventTypes.et_LOST_FOCUS && 
-                    !pVal.BeforeAction))
+                //Malzeme kodu ya da fiyat değiştiğinde
+                if (pVal.ItemUID == "38" && pVal.ColUID == "1" &&
+                    pVal.EventType == SAPbouiCOM.BoEventTypes.et_VALIDATE && pVal.BeforeAction)
                 {
-                    var oForm = SBO_Application.Forms.Item(FormUID);
+
+                    var oMatrix = (SAPbouiCOM.Matrix)oForm.Items.Item("38").Specific;
+                    var itemCode = ((SAPbouiCOM.EditText)oMatrix.Columns.Item("1").Cells.Item(pVal.Row).Specific);
+                    // Form için dictionary yoksa oluştur
+                    if (!previousItemCodes.ContainsKey(FormUID))
+                    {
+                        previousItemCodes[FormUID] = new Dictionary<int, string>();
+                    }
+
+                    // Önceki değeri al veya boş string kullan
+                    string previousValue = previousItemCodes[FormUID].ContainsKey(pVal.Row) ? previousItemCodes[FormUID][pVal.Row] : "";
+                    string currentValue = itemCode.Value;
+
+                    // Sadece değer gerçekten değiştiyse işlem yap
+                    if (currentValue != previousValue)
+                    {
+                        // Yeni değeri kaydet
+                        previousItemCodes[FormUID][pVal.Row] = currentValue;
+                        var docDate = (SAPbouiCOM.EditText)oForm.Items.Item("46").Specific;
+                        var paymCode = ((SAPbouiCOM.ComboBox)oForm.Items.Item("47").Specific).Value;
+                        paymCode = paymCode.Trim();
+                        paymCode = paymCode.Replace("-", "N");
+                        paymCode = "U_Paym" + paymCode;
+                        var price = ((SAPbouiCOM.EditText)oMatrix.Columns.Item("14").Cells.Item(pVal.Row).Specific);
+                        var discount = ((SAPbouiCOM.EditText)oMatrix.Columns.Item("15").Cells.Item(pVal.Row).Specific);
+                        // Fiyat sorgusu
+                        SAPbobsCOM.Recordset prcRecordSet;
+
+                        prcRecordSet = GetRecordSet(oForm, itemCode.Value);
+                        prcRecordSet.MoveFirst();
+                        if (!prcRecordSet.EoF)
+                        {
+                            // Bayrağı ayarla (sonsuz döngüyü engellemek için)
+                            isUpdating = true;
+                            price.Value = prcRecordSet.Fields.Item("PrcPrice").Value.ToString() + " " + prcRecordSet.Fields.Item("PrcCurrency").Value.ToString();
+                            var disc = prcRecordSet.Fields.Item(paymCode).Value.ToString();
+                            disc = disc.Replace(',', '.');
+                            if (pVal.FormTypeEx == "149")//Sadece satış teklifinde indirim yansımalı
+                            {
+                                discount.Value = disc;
+                            }
+                            
+                        }
+                        for (var i = 0; i < oMatrix.RowCount; i++)
+                        {
+                            if (!previousItemCodes[FormUID].ContainsKey(i + 1))
+                            {
+                                price = ((SAPbouiCOM.EditText)oMatrix.Columns.Item("14").Cells.Item(i + 1).Specific);
+                                discount = ((SAPbouiCOM.EditText)oMatrix.Columns.Item("15").Cells.Item(i + 1).Specific);
+                                var itemCodeTmp = ((SAPbouiCOM.EditText)oMatrix.Columns.Item("1").Cells.Item(i + 1).Specific);
+                                prcRecordSet = GetRecordSet(oForm, itemCodeTmp.Value);
+                                prcRecordSet.MoveFirst();
+                                price.Value = prcRecordSet.Fields.Item("PrcPrice").Value.ToString() + " " + prcRecordSet.Fields.Item("PrcCurrency").Value.ToString();
+                                var disc = prcRecordSet.Fields.Item(paymCode).Value.ToString();
+                                disc = disc.Replace(',', '.');
+                                
+                                if (pVal.FormTypeEx == "149")//Sadece satış teklifinde indirim yansımalı
+                                {
+                                    discount.Value = disc;
+                                }
+                            }
+
+                        }
+
+                    }
+                }
+                //Choose from listte toplu seçim yapıldığında doğrudan indirim alanı değişirse
+                if (pVal.ItemUID == "38" && (pVal.ColUID == "14" || pVal.ColUID == "15") &&
+                         pVal.EventType == SAPbouiCOM.BoEventTypes.et_VALIDATE && pVal.BeforeAction)
+                {
+                    var oMatrix = (SAPbouiCOM.Matrix)oForm.Items.Item("38").Specific;
+                    var itemCode = ((SAPbouiCOM.EditText)oMatrix.Columns.Item("1").Cells.Item(pVal.Row).Specific);
+                    previousItemCodes[FormUID][pVal.Row] = itemCode.Value;
+                }
+
+                //Belge Tarihi ya da Ödeme Koşulu değiştiğinde
+                if ((pVal.ItemUID == "47" &&
+                pVal.EventType == SAPbouiCOM.BoEventTypes.et_COMBO_SELECT &&
+                !pVal.BeforeAction)
+                ||
+                ((pVal.ItemUID == "46" || pVal.ItemUID == "10") &&
+                pVal.EventType == SAPbouiCOM.BoEventTypes.et_LOST_FOCUS &&
+                !pVal.BeforeAction))
+                {
                     var docDate = (SAPbouiCOM.EditText)oForm.Items.Item("46").Specific;
                     var paymCode = ((SAPbouiCOM.ComboBox)oForm.Items.Item("47").Specific).Value;
                     var beforePanelLevel = oForm.PaneLevel;
@@ -379,49 +532,48 @@ namespace PriceList
                     isUpdating = true;
                     if (oForm.PaneLevel != 1)
                     {
+
                         oForm.PaneLevel = 1;
+                        foreach (SAPbouiCOM.Item item in oForm.Items)
+                        {
+                            if (item.Type == SAPbouiCOM.BoFormItemTypes.it_FOLDER)
+                            {
+                                var folder = (SAPbouiCOM.Folder)item.Specific;
+                                folder.Select();
+                                break;
+                            }
+                        }
                     }
-                    
+
                     var oMatrix = (SAPbouiCOM.Matrix)oForm.Items.Item("38").Specific;
                     oMatrix.Item.Enabled = true;
-                    for (var i = 0; i < oMatrix.RowCount; i ++)
+                    for (var i = 0; i < oMatrix.RowCount; i++)
                     {
                         var itemCode = ((SAPbouiCOM.EditText)oMatrix.Columns.Item("1").Cells.Item(i + 1).Specific);
                         var price = ((SAPbouiCOM.EditText)oMatrix.Columns.Item("14").Cells.Item(i + 1).Specific);
                         var discount = ((SAPbouiCOM.EditText)oMatrix.Columns.Item("15").Cells.Item(i + 1).Specific);
                         SAPbobsCOM.Recordset prcRecordSet;
-                        prcRecordSet = (SAPbobsCOM.Recordset)Program.diCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset);
-
-                        string strQuery = "SELECT OITM.ItemCode,OITM.ItemName,PRC.PrcValidFrom,PRC.PrcValidUntil,PRC.PrcDescription, PRC.PrcPrice,PRC.PrcCurrency,DSC.* FROM OITM ";
-                        strQuery = strQuery + "LEFT JOIN ";
-                        strQuery = strQuery + "(SELECT PRCHEAD.U_ValidFrom AS PrcValidFrom, PRCHEAD.U_ValidUntil AS PrcValidUntil, PRCHEAD.U_Description AS PrcDescription, PRCITEM.U_ItemCode AS PrcItemCode, PRCITEM.U_Price AS PrcPrice, PRCITEM.U_Currency AS PrcCurrency FROM[@SML_PRCHEAD] PRCHEAD INNER JOIN[@SML_PRCITEM] PRCITEM ON PRCITEM.DocEntry = PRCHEAD.DocEntry) PRC ";
-                        strQuery = strQuery + " ON PRC.PrcItemCode = OITM.ItemCode ";
-                        strQuery = strQuery + " LEFT JOIN ";
-                        strQuery = strQuery + " (SELECT DSCHEAD.U_ValidFrom AS DscValidFrom, DSCHEAD.U_ValidUntil AS DscValidUntil,DSCHEAD.U_Description AS DscDescription,DSCITEM.* FROM [@SML_DSCHEAD] DSCHEAD INNER JOIN [@SML_DSCITEM] DSCITEM ON DSCITEM.DocEntry = DSCHEAD.DocEntry) DSC ";
-                        strQuery = strQuery + " ON  DSC.U_ItemCode = OITM.ItemCode ";
-                        strQuery = strQuery + $"where OITM.ItemCode = '{itemCode.Value}' AND PRC.PrcValidFrom <= '{docDate.Value}' AND PRC.PrcValidUntil >= '{docDate.Value}' ";
-
-                        prcRecordSet.DoQuery(strQuery);
-
+                        prcRecordSet = GetRecordSet(oForm, itemCode.Value);
+                        prcRecordSet.MoveFirst();
                         if (!prcRecordSet.EoF)
                         {
                             // Bayrağı ayarla (sonsuz döngüyü engellemek için)
                             price.Item.Enabled = true;
                             discount.Item.Enabled = true;
                             price.Value = prcRecordSet.Fields.Item("PrcPrice").Value.ToString() + " " + prcRecordSet.Fields.Item("PrcCurrency").Value.ToString();
-                            var a = prcRecordSet.Fields.Item(paymCode).Value.ToString();
-                            discount.Value = prcRecordSet.Fields.Item(paymCode).Value.ToString();
+                            var disc = prcRecordSet.Fields.Item(paymCode).Value.ToString();
+                            disc = disc.Replace(',', '.');
+                            if (pVal.FormTypeEx == "149")//Sadece satış teklifinde indirim yansımalı
+                            {
+                                discount.Value = disc;
+                            }
                         }
                     }
-                    if (oForm.PaneLevel != beforePanelLevel)
-                    {
-                        oForm.PaneLevel = beforePanelLevel;
-                    }
                 }
-                if (SalesForms.Contains(pVal.FormTypeEx) && pVal.ItemUID == "38" && pVal.ColUID == "15" &&
-                    pVal.EventType == SAPbouiCOM.BoEventTypes.et_VALIDATE && pVal.BeforeAction)
+                if (pVal.ItemUID == "38" && pVal.ColUID == "15" &&
+                    pVal.EventType == SAPbouiCOM.BoEventTypes.et_VALIDATE && pVal.BeforeAction && pVal.FormTypeEx == "149")
                 {
-                    var oForm = SBO_Application.Forms.Item(FormUID);
+
                     var oMatrix = (SAPbouiCOM.Matrix)oForm.Items.Item("38").Specific;
                     var docDate = (SAPbouiCOM.EditText)oForm.Items.Item("46").Specific;
                     var itemCode = ((SAPbouiCOM.EditText)oMatrix.Columns.Item("1").Cells.Item(pVal.Row).Specific);
@@ -429,15 +581,14 @@ namespace PriceList
                     var discount = ((SAPbouiCOM.EditText)oMatrix.Columns.Item("15").Cells.Item(pVal.Row).Specific);
                     paymCode = paymCode.Trim();
                     paymCode = paymCode.Replace("-", "N");
+                    string paymAddCode = "U_AddDiscpaym" + paymCode;
                     paymCode = "U_Paym" + paymCode;
                     SAPbobsCOM.Recordset prcRecordSet;
-                    prcRecordSet = (SAPbobsCOM.Recordset)Program.diCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset);
-                    string strQuery = "SELECT DSCHEAD.U_ValidFrom AS DscValidFrom, DSCHEAD.U_ValidUntil AS DscValidUntil,DSCHEAD.U_Description AS DscDescription,DSCITEM.* FROM [@SML_DSCHEAD] DSCHEAD INNER JOIN [@SML_DSCITEM] DSCITEM ON DSCITEM.DocEntry = DSCHEAD.DocEntry ";
-                    strQuery = strQuery + $"where DSCITEM.U_ItemCode = '{itemCode.Value}' AND DSCHEAD.U_ValidFrom <= '{docDate.Value}' AND DSCHEAD.U_ValidUntil >= '{docDate.Value}' ";
-                    prcRecordSet.DoQuery(strQuery);
+                    prcRecordSet = GetRecordSet(oForm, itemCode.Value);
+                    prcRecordSet.MoveFirst();
                     if (!prcRecordSet.EoF)
                     {
-                        float maxDiscount = float.Parse(prcRecordSet.Fields.Item(paymCode).Value.ToString()) + float.Parse(prcRecordSet.Fields.Item("U_AdditionalDiscount").Value.ToString());
+                        float maxDiscount = float.Parse(prcRecordSet.Fields.Item(paymCode).Value.ToString()) + float.Parse(prcRecordSet.Fields.Item(paymAddCode).Value.ToString());
                         float activeDiscount = float.Parse(discount.String);
                         if (activeDiscount > maxDiscount)
                         {
@@ -449,18 +600,19 @@ namespace PriceList
                 }
 
 
+
+
             }
-            catch (Exception ex)
+            catch
             {
-                SBO_Application.StatusBar.SetText($"Hata: {ex.Message}", SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Error);
+                // SBO_Application.StatusBar.SetText($"Hata: {ex.Message}", SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Error);
             }
             finally
             {
-                
+                oForm.Freeze(false);
                 isUpdating = false;
             }
         }
-
 
 
         static void SBO_Application_AppEvent(SAPbouiCOM.BoAppEventTypes EventType)
